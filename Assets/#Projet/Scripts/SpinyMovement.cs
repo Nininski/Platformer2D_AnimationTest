@@ -21,28 +21,39 @@ public class SpinyMovement : MonoBehaviour
 
     void Update()
     {
-        
-        Vector3 mvt = speed * (goRight? 1f : -1f) * Time.deltaTime * transform.right;
+
+        Vector3 mvt = speed * (goRight ? 1f : -1f) * Time.deltaTime * transform.right;
         transform.Translate(mvt);
-        //transform.position -= speed * Time.deltaTime * transform.right;
+        Vector3 origin = transform.position + 0.4f * Vector3.up * 0.4f + Vector3.right * 0.4f * (goRight ? 1f : -1f);
+        Vector3 direction = Vector3.right * (goRight ? 1f : -1f);
 
+        Debug.DrawRay(origin, direction, Color.cyan);
+        RaycastHit2D sideHit = Physics2D.Raycast(origin, direction, 0.02f); // si on ne touche rien, le hit sera null + 0.2f correspond à la distance
 
+        origin = transform.position + Vector3.right * 0.4f * (goRight ? 1f : -1f);
+        direction = Vector3.down;
+        Debug.DrawRay(origin,direction, Color.red); // donne le point de départ de notre ray
+        RaycastHit2D belowHit = Physics2D.Raycast(origin, direction,  1.02f);
 
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if(collision.gameObject.CompareTag("Obstacle"))
+        
+        if (sideHit.collider != null)
         {
             InverseSpeed();
-            spriteSpiny.flipX = !spriteSpiny.flipX;
         }
+        
+        if (belowHit.collider == null)
+        {
+            InverseSpeed();
+        } 
+        
 
     }
+
 
     private void InverseSpeed()
     {
         goRight = !goRight;
+        spriteSpiny.flipX = !spriteSpiny.flipX;
     }
 
 
